@@ -138,6 +138,7 @@ func (r *ByteReader) parseName() string {
 
 func (r *ByteReader) parseRData() string {
 	ip := r.Packet[r.Pos : r.Pos+4]
+	r.Pos += 3
 	return fmt.Sprintf("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3])
 }
 
