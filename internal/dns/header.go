@@ -20,20 +20,21 @@ type Flags struct {
 }
 
 func (c *Cursor) ParseHeader() Header {
-	c.SkipBytes(2)
-
-	flags := c.parseFlags()
-
-	c.SkipBytes(8)
-
 	return Header{
-		Flags: flags,
+		ID:      c.parseID(),
+		Flags:   c.parseFlags(),
+		QDCount: c.parseQDCount(),
+		ANCount: c.parseANCount(),
+		NSCount: c.parseNSCount(),
+		ARCount: c.parseARCount(),
 	}
 }
 
-func (c *Cursor) parseID() uint16 {
-	return c.takeUint16()
-}
+func (c *Cursor) parseID() uint16      { return c.takeUint16() }
+func (c *Cursor) parseQDCount() uint16 { return c.takeUint16() }
+func (c *Cursor) parseANCount() uint16 { return c.takeUint16() }
+func (c *Cursor) parseNSCount() uint16 { return c.takeUint16() }
+func (c *Cursor) parseARCount() uint16 { return c.takeUint16() }
 
 func (c *Cursor) parseFlags() Flags {
 	f := c.takeUint16()
