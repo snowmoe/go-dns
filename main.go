@@ -53,16 +53,14 @@ func main() {
 
 	c.Data = resp
 
-	h := c.DecodeHeader()
-	q := c.DecodeQuestion()
-	r := c.DecodeResource()
+	msg := c.DecodeMessage()
 
 	fmt.Printf(`
    id: %d
 flags: %+v
 `,
-		h.ID,
-		h.Flags,
+		msg.Header.ID,
+		msg.Header.Flags,
 	)
 
 	fmt.Printf(`
@@ -70,9 +68,9 @@ flags: %+v
  type: %d
 class: %d
 `,
-		q.Name,
-		q.Type,
-		q.Class,
+		msg.Question.Name,
+		msg.Question.Type,
+		msg.Question.Class,
 	)
 
 	fmt.Printf(`
@@ -81,8 +79,8 @@ name: %s
 data: %d
 
 `,
-		r.Name,
-		r.Length,
-		r.Data,
+		msg.Resource.Name,
+		msg.Resource.Length,
+		msg.Resource.Data,
 	)
 }
