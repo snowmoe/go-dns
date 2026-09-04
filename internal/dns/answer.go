@@ -1,7 +1,5 @@
 package dns
 
-import "encoding/binary"
-
 func (c *Cursor) DecodeResource() Resource {
 	name := c.parseName()
 
@@ -30,10 +28,7 @@ func (c *Cursor) parseName() string {
 	}
 }
 
-func (c *Cursor) parseRDLength() uint16 {
-	b := c.takeBytes(2)
-	return binary.BigEndian.Uint16(b)
-}
+func (c *Cursor) parseRDLength() uint16 { return c.takeUint16() }
 
 func (c *Cursor) parseRData(l uint16) []byte {
 	b := c.takeBytes(int(l))

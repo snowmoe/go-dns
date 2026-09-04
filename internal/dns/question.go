@@ -1,7 +1,6 @@
 package dns
 
 import (
-	"encoding/binary"
 	"strings"
 )
 
@@ -13,15 +12,8 @@ func (c *Cursor) DecodeQuestion() Question {
 	}
 }
 
-func (c *Cursor) parseQType() uint16 {
-	b := c.takeBytes(2)
-	return binary.BigEndian.Uint16(b)
-}
-
-func (c *Cursor) parseQClass() uint16 {
-	b := c.takeBytes(2)
-	return binary.BigEndian.Uint16(b)
-}
+func (c *Cursor) parseQType() uint16  { return c.takeUint16() }
+func (c *Cursor) parseQClass() uint16 { return c.takeUint16() }
 
 func (c *Cursor) parseQName() string {
 	var (
