@@ -16,11 +16,16 @@ func (c *Cursor) takeUint16() uint16 {
 	return binary.BigEndian.Uint16(b)
 }
 
+func (c *Cursor) takeUint32() uint32 {
+	b := c.takeBytes(4)
+	return binary.BigEndian.Uint32(b)
+}
+
 func bits(value uint16, shift, width int) uint16 {
 	return (value >> shift) & ((1 << width) - 1)
 }
 
-func (c *Cursor) SkipBytes(n int) {
+func (c *Cursor) skipBytes(n int) {
 	c.Pos += n
 }
 
