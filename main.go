@@ -63,24 +63,29 @@ flags: %+v
 		msg.Header.Flags,
 	)
 
-	fmt.Printf(`
+	for _, q := range msg.Questions {
+		fmt.Printf(`
  name: %s
  type: %d
 class: %d
 `,
-		msg.Question.Name,
-		msg.Question.Type,
-		msg.Question.Class,
-	)
+			q.Name,
+			q.Type,
+			q.Class,
+		)
+	}
 
-	fmt.Printf(`
-name: %s
- len: %d
-data: %d
+	for _, r := range msg.Resources {
 
-`,
-		msg.Resource.Name,
-		msg.Resource.Length,
-		msg.Resource.Data,
-	)
+		fmt.Printf(`
+		name: %s
+		len: %d
+		data: %d
+		
+		`,
+			r.Name,
+			r.Length,
+			r.Data,
+		)
+	}
 }
