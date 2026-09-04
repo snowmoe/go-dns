@@ -12,10 +12,10 @@ type Resource struct {
 func (c *Cursor) DecodeResource() Resource {
 	var (
 		name   = c.parseName()
-		rType  = c.parseType()
-		class  = c.parseClass()
-		ttl    = c.parseTTL()
-		length = c.parseRDLength()
+		rType  = c.takeUint16()
+		class  = c.takeUint16()
+		ttl    = c.takeUint32()
+		length = c.takeUint16()
 		data   = c.parseRData(length)
 	)
 
@@ -41,11 +41,6 @@ func (c *Cursor) parseName() string {
 		return ""
 	}
 }
-
-func (c *Cursor) parseType() uint16     { return c.takeUint16() }
-func (c *Cursor) parseClass() uint16    { return c.takeUint16() }
-func (c *Cursor) parseTTL() uint32      { return c.takeUint32() }
-func (c *Cursor) parseRDLength() uint16 { return c.takeUint16() }
 
 func (c *Cursor) parseRData(l uint16) []byte {
 	b := c.takeBytes(int(l))

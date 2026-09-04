@@ -21,20 +21,14 @@ type Flags struct {
 
 func (c *Cursor) DecodeHeader() Header {
 	return Header{
-		ID:      c.parseID(),
+		ID:      c.takeUint16(),
 		Flags:   c.parseFlags(),
-		QDCount: c.parseQDCount(),
-		ANCount: c.parseANCount(),
-		NSCount: c.parseNSCount(),
-		ARCount: c.parseARCount(),
+		QDCount: c.takeUint16(),
+		ANCount: c.takeUint16(),
+		NSCount: c.takeUint16(),
+		ARCount: c.takeUint16(),
 	}
 }
-
-func (c *Cursor) parseID() uint16      { return c.takeUint16() }
-func (c *Cursor) parseQDCount() uint16 { return c.takeUint16() }
-func (c *Cursor) parseANCount() uint16 { return c.takeUint16() }
-func (c *Cursor) parseNSCount() uint16 { return c.takeUint16() }
-func (c *Cursor) parseARCount() uint16 { return c.takeUint16() }
 
 func (c *Cursor) parseFlags() Flags {
 	f := c.takeUint16()

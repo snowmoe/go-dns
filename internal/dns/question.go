@@ -13,13 +13,10 @@ type Question struct {
 func (c *Cursor) DecodeQuestion() Question {
 	return Question{
 		Name:  c.parseQName(),
-		Type:  c.parseQType(),
-		Class: c.parseQClass(),
+		Type:  c.takeUint16(),
+		Class: c.takeUint16(),
 	}
 }
-
-func (c *Cursor) parseQType() uint16  { return c.takeUint16() }
-func (c *Cursor) parseQClass() uint16 { return c.takeUint16() }
 
 func (c *Cursor) parseQName() string {
 	var (
