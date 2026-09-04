@@ -71,11 +71,13 @@ func main() {
 
 	fmt.Println("aname:", c.parseName())
 
-	c.skipBytes(10)
+	c.skipBytes(8)
 
-	c.printPos()
+	rdl := c.parseRDLength()
 
-	fmt.Println("ip:", c.parseRData())
+	ip := c.parseRData(rdl)
+
+	fmt.Println(ip)
 
 	c.printPos()
 }
@@ -86,17 +88,13 @@ func (c *Cursor) parseHeader() {
 }
 
 func (c *Cursor) parseQType() uint16 {
-	qType := binary.BigEndian.Uint16(c.Data[c.Pos : c.Pos+2])
-	c.Pos += 2
-
-	return qType
+	b := c.takeBytes(2)
+	return binary.BigEndian.Uint16(b)
 }
 
 func (c *Cursor) parseQClass() uint16 {
-	qClass := binary.BigEndian.Uint16(c.Data[c.Pos : c.Pos+2])
-	c.Pos += 2
-
-	return qClass
+	b := c.takeBytes(2)
+	return binary.BigEndian.Uint16(b)
 }
 
 func (c *Cursor) parseQName() string {
@@ -136,10 +134,21 @@ func (c *Cursor) parseName() string {
 	}
 }
 
-func (c *Cursor) parseRData() string {
-	ip := c.Data[c.Pos : c.Pos+4]
-	c.Pos += 3
-	return fmt.Sprintf("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3])
+func (c *Cursor) parseRDLength() uint16 {
+	b := c.takeBytes(2)
+	return binary.BigEndian.Uint16(b)
+}
+
+func (c *Cursor) parseRData(l uint16) []byte {
+	b := c.takeBytes(int(l))
+	c.Pos += int(l)
+	return b
+}
+
+func (c *Cursor) takeBytes(n int) []byte {
+	b := c.Data[c.Pos : c.Pos+n]
+	c.Pos += n
+	return b
 }
 
 func (c *Cursor) skipBytes(n int) {
