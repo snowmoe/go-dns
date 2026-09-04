@@ -53,7 +53,9 @@ func main() {
 
 	c.Data = resp
 
-	c.ParseHeader()
+	h := c.ParseHeader()
+
+	fmt.Println(h.Flags)
 
 	q := c.DecodeQuestion()
 	r := c.DecodeResource()

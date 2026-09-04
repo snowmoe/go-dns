@@ -12,15 +12,6 @@ type Message struct {
 	Resource Resource
 }
 
-type Header struct {
-	ID      uint16
-	Flags   uint16
-	QDCount uint16
-	ANCount uint16
-	NSCount uint16
-	ARCount uint16
-}
-
 type Question struct {
 	Name  string
 	Type  uint16
