@@ -53,12 +53,17 @@ func main() {
 
 	c.Data = resp
 
-	h := c.ParseHeader()
-
-	fmt.Println(h.Flags)
-
+	h := c.DecodeHeader()
 	q := c.DecodeQuestion()
 	r := c.DecodeResource()
+
+	fmt.Printf(`
+   id: %d
+flags: %+v
+`,
+		h.ID,
+		h.Flags,
+	)
 
 	fmt.Printf(`
  name: %s

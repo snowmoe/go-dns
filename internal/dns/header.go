@@ -19,7 +19,7 @@ type Flags struct {
 	ResponseCode       uint8
 }
 
-func (c *Cursor) ParseHeader() Header {
+func (c *Cursor) DecodeHeader() Header {
 	return Header{
 		ID:      c.parseID(),
 		Flags:   c.parseFlags(),
