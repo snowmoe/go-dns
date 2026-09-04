@@ -17,14 +17,14 @@ import (
 
 // dns packets = BULLSHIT = BULLSHIT PARSING CODE FMLFMLFMLFML
 
-type ByteReader struct {
+type Cursor struct {
 	Pos    int
-	Packet []byte
+	Data   []byte
 	Labels map[int]string
 }
 
 func main() {
-	r := ByteReader{
+	c := Cursor{
 		Pos:    0,
 		Labels: make(map[int]string),
 	}
@@ -58,94 +58,94 @@ func main() {
 	resp := make([]byte, 512)
 	_, err = conn.Read(resp)
 
-	r.Packet = resp
+	c.Data = resp
 
-	r.parseHeader()
+	c.parseHeader()
 
-	fmt.Println("name:", r.parseQName())
-	// fmt.Println(r.Pos)
+	fmt.Println("name:", c.parseQName())
+	// fmt.Println(c.Pos)
 
-	fmt.Println("qtype:", r.parseQType())
+	fmt.Println("qtype:", c.parseQType())
 
-	fmt.Println("qclass:", r.parseQClass())
+	fmt.Println("qclass:", c.parseQClass())
 
-	fmt.Println("aname:", r.parseName())
+	fmt.Println("aname:", c.parseName())
 
-	r.skipBytes(10)
+	c.skipBytes(10)
 
-	r.printPos()
+	c.printPos()
 
-	fmt.Println("ip:", r.parseRData())
+	fmt.Println("ip:", c.parseRData())
 
-	r.printPos()
+	c.printPos()
 }
 
-func (r *ByteReader) parseHeader() {
+func (c *Cursor) parseHeader() {
 	// tbc
-	r.Pos = 12
+	c.Pos = 12
 }
 
-func (r *ByteReader) parseQType() uint16 {
-	qType := binary.BigEndian.Uint16(r.Packet[r.Pos : r.Pos+2])
-	r.Pos += 2
+func (c *Cursor) parseQType() uint16 {
+	qType := binary.BigEndian.Uint16(c.Data[c.Pos : c.Pos+2])
+	c.Pos += 2
 
 	return qType
 }
 
-func (r *ByteReader) parseQClass() uint16 {
-	qClass := binary.BigEndian.Uint16(r.Packet[r.Pos : r.Pos+2])
-	r.Pos += 2
+func (c *Cursor) parseQClass() uint16 {
+	qClass := binary.BigEndian.Uint16(c.Data[c.Pos : c.Pos+2])
+	c.Pos += 2
 
 	return qClass
 }
 
-func (r *ByteReader) parseQName() string {
+func (c *Cursor) parseQName() string {
 	var (
 		parts []string
-		start = r.Pos
+		start = c.Pos
 	)
 
 	for {
-		len := int(r.Packet[r.Pos])
+		len := int(c.Data[c.Pos])
 
 		if len == 0 {
-			r.Pos += 1
+			c.Pos += 1
 			break
 		}
 
-		parts = append(parts, string(r.Packet[r.Pos+1:r.Pos+len+1]))
-		r.Pos = r.Pos + len + 1
+		parts = append(parts, string(c.Data[c.Pos+1:c.Pos+len+1]))
+		c.Pos = c.Pos + len + 1
 	}
 
 	label := strings.Join(parts, ".")
-	r.Labels[start] = label
+	c.Labels[start] = label
 
 	return label
 }
 
-func (r *ByteReader) parseName() string {
-	b := r.Packet[r.Pos]
+func (c *Cursor) parseName() string {
+	b := c.Data[c.Pos]
 
 	// top two bytes = 11 = pointer
 	if b&0xC0 == 0xC0 {
-		label := r.Labels[int(r.Packet[r.Pos+1])]
-		r.Pos += 2
+		label := c.Labels[int(c.Data[c.Pos+1])]
+		c.Pos += 2
 		return label
 	} else {
 		return ""
 	}
 }
 
-func (r *ByteReader) parseRData() string {
-	ip := r.Packet[r.Pos : r.Pos+4]
-	r.Pos += 3
+func (c *Cursor) parseRData() string {
+	ip := c.Data[c.Pos : c.Pos+4]
+	c.Pos += 3
 	return fmt.Sprintf("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3])
 }
 
-func (r *ByteReader) skipBytes(n int) {
-	r.Pos += n
+func (c *Cursor) skipBytes(n int) {
+	c.Pos += n
 }
 
-func (r *ByteReader) printPos() {
-	fmt.Println("position:", r.Pos)
+func (c *Cursor) printPos() {
+	fmt.Println("position:", c.Pos)
 }
