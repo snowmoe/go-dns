@@ -4,6 +4,12 @@ import (
 	"strings"
 )
 
+type Question struct {
+	Name  string
+	Type  uint16
+	Class uint16
+}
+
 func (c *Cursor) DecodeQuestion() Question {
 	return Question{
 		Name:  c.parseQName(),

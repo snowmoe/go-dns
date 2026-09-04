@@ -1,5 +1,14 @@
 package dns
 
+type Resource struct {
+	Name   string
+	Type   uint16
+	Class  uint16
+	TTL    uint32
+	Length uint16
+	Data   []byte
+}
+
 func (c *Cursor) DecodeResource() Resource {
 	name := c.parseName()
 
