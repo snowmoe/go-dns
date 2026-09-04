@@ -55,8 +55,8 @@ func main() {
 
 	c.ParseHeader()
 
-	q := c.ReadQuestion()
-	r := c.ReadResource()
+	q := c.DecodeQuestion()
+	r := c.DecodeResource()
 
 	fmt.Printf(`
  name: %s

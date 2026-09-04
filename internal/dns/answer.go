@@ -2,7 +2,7 @@ package dns
 
 import "encoding/binary"
 
-func (c *Cursor) ReadResource() Resource {
+func (c *Cursor) DecodeResource() Resource {
 	name := c.parseName()
 
 	c.SkipBytes(8)

@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func (c *Cursor) ReadQuestion() Question {
+func (c *Cursor) DecodeQuestion() Question {
 	return Question{
 		Name:  c.parseQName(),
 		Type:  c.parseQType(),
