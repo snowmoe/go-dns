@@ -32,18 +32,28 @@ func (c *Cursor) DecodeResource() Resource {
 func (c *Cursor) parseName() string {
 	b := c.Data[c.Pos]
 
-	// top two bytes = 11 = pointer
+	// is a pointer
 	if b&0xC0 == 0xC0 {
-		label := c.Labels[int(c.Data[c.Pos+1])]
+		// offset := c.Data[c.Pos+1]
 		c.Pos += 2
-		return label
+		return "POINTER"
+
 	} else {
-		return ""
+		for {
+			len := int(c.Data[c.Pos])
+			if len == 0 {
+				c.Pos += 1
+				break
+			}
+
+			c.skipBytes(len + 1)
+		}
+
+		return "NOTPOINTER"
 	}
 }
 
 func (c *Cursor) parseRData(l uint16) []byte {
 	b := c.takeBytes(int(l))
-	c.Pos += int(l)
 	return b
 }
