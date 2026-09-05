@@ -78,11 +78,10 @@ class: %d
 	for _, r := range msg.Resources {
 
 		fmt.Printf(`
-		name: %s
-		len: %d
-		data: %d
-		
-		`,
+name: %s
+ len: %d
+data: %d
+`,
 			r.Name,
 			r.Length,
 			r.Data,

@@ -19,25 +19,21 @@ func (c *Cursor) DecodeQuestion() Question {
 }
 
 func (c *Cursor) parseQName() string {
-	var (
-		parts []string
-		start = c.Pos
-	)
+	if c.isPointer() {
+		c.skipBytes(1)
+		pointer := c.takeByte()
+		current := c.pos()
 
-	for {
-		len := int(c.Data[c.Pos])
+		c.Pos = int(pointer)
 
-		if len == 0 {
-			c.Pos += 1
-			break
-		}
+		label := c.parseLabel()
 
-		parts = append(parts, string(c.Data[c.Pos+1:c.Pos+len+1]))
-		c.Pos = c.Pos + len + 1
+		c.Pos = current
+
+		return strings.Join(label, ".")
+	} else {
+		label := c.parseLabel()
+
+		return strings.Join(label, ".")
 	}
-
-	label := strings.Join(parts, ".")
-	c.Labels[start] = label
-
-	return label
 }

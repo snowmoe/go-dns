@@ -1,5 +1,7 @@
 package dns
 
+import "strings"
+
 type Resource struct {
 	Name   string
 	Type   uint16
@@ -30,27 +32,48 @@ func (c *Cursor) DecodeResource() Resource {
 }
 
 func (c *Cursor) parseName() string {
-	b := c.Data[c.Pos]
+	if c.isPointer() {
+		// we know it's a pointer so we skip that byte
+		c.skipBytes(1)
 
-	// is a pointer
-	if b&0xC0 == 0xC0 {
-		// offset := c.Data[c.Pos+1]
-		c.Pos += 2
-		return "POINTER"
+		// consume the next byte and make note of our position
+		var (
+			pointer = c.takeByte()
+			current = c.pos()
+		)
 
+		// go back to the offset from the pointer byte
+		c.Pos = int(pointer)
+
+		// parse as normal
+		label := c.parseLabel()
+
+		// go forward to where we were
+		c.Pos = current
+
+		return strings.Join(label, ".")
 	} else {
-		for {
-			len := int(c.Data[c.Pos])
-			if len == 0 {
-				c.Pos += 1
-				break
-			}
+		label := c.parseLabel()
 
-			c.skipBytes(len + 1)
+		return strings.Join(label, ".")
+	}
+}
+
+func (c *Cursor) parseLabel() []string {
+	var parts []string
+	for {
+		labelLen := c.takeByte()
+
+		if labelLen == 0 {
+			break
 		}
 
-		return "NOTPOINTER"
+		label := string(c.takeBytes(int(labelLen)))
+
+		parts = append(parts, label)
 	}
+
+	return parts
 }
 
 func (c *Cursor) parseRData(l uint16) []byte {
