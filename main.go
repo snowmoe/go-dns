@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"net"
-	"snowmoe/dns/internal/dns"
+
+	"github.com/snowmoe/go-dns/internal/dns"
 )
 
 // dns packet parsing yay
