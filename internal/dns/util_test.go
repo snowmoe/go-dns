@@ -67,7 +67,7 @@ func TestTakeUint16Sequential(t *testing.T) {
 
 	first := c.takeUint16()
 	if first != 0x1234 {
-		t.Errorf("first call: got %d want 0x1234", first)
+		t.Errorf("first call: got %X want 1234", first)
 	}
 
 	if c.Pos != 2 {
@@ -76,7 +76,7 @@ func TestTakeUint16Sequential(t *testing.T) {
 
 	second := c.takeUint16()
 	if second != 0x5678 {
-		t.Errorf("second call: got %d want 0x5678", second)
+		t.Errorf("second call: got %X want 5678", second)
 	}
 
 	if c.Pos != 4 {
