@@ -10,10 +10,7 @@ import (
 // dns packet parsing yay
 
 func main() {
-	c := dns.Cursor{
-		Pos:    0,
-		Labels: make(map[int]string),
-	}
+	c := dns.Cursor{}
 
 	header := []byte{
 		0xAB, 0xCD,
