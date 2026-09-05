@@ -6,15 +6,7 @@ import (
 	"snowmoe/dns/internal/dns"
 )
 
-// if you're reading this then stop reading the code
-// this is below a PoC atp, it's a cobbled together.. thing
-// i'm sick of bytes, i see bytes in my dreams, i breath in bytes
-// i eat bytes, i am bytes, bytes[bytes[bytes[bytes]]]
-
-// i thought this would be cool, I thought it would be a nice little PoC
-// to understand dns at the packet level
-
-// dns packets = BULLSHIT = BULLSHIT PARSING CODE FMLFMLFMLFML
+// dns packet parsing yay
 
 func main() {
 	c := dns.Cursor{
