@@ -21,17 +21,18 @@ func main() {
 		0x00, 0x00,
 	}
 
+	// A google.com
 	question := []byte{
-		6, 'g', 'o', 'o', 'g', 'l', 'e', // 7
-		3, 'c', 'o', 'm', // 11
-		0,          // 12
-		0x00, 0x01, // 25, 26
-		0x00, 0x01, // 27, 28
+		6, 'g', 'o', 'o', 'g', 'l', 'e',
+		3, 'c', 'o', 'm',
+		0,
+		0x00, 0x01,
+		0x00, 0x01,
 	}
 
 	packet := append(header, question...)
 
-	conn, err := net.Dial("udp", "8.8.8.8:53")
+	conn, err := net.Dial("udp", "1.1.1.1:53")
 	if err != nil {
 		panic(err)
 	}
@@ -48,16 +49,18 @@ func main() {
 	fmt.Printf(`
    id: %d
 flags: %+v
+
 `,
 		msg.Header.ID,
 		msg.Header.Flags,
 	)
 
+	fmt.Printf("\nquestion section [%d]\n", len(msg.Questions))
 	for _, q := range msg.Questions {
 		fmt.Printf(`
- name: %s
- type: %d
-class: %d
+	 name: %s
+	 type: %d
+	class: %d
 `,
 			q.Name,
 			q.Type,
@@ -65,14 +68,17 @@ class: %d
 		)
 	}
 
+	fmt.Printf("\nresource section [%d]\n", len(msg.Resources))
 	for _, r := range msg.Resources {
 
 		fmt.Printf(`
-name: %s
- len: %d
-data: %d
+	name: %s
+	 ttl: %d
+	 len: %d
+	data: %d
 `,
 			r.Name,
+			r.TTL,
 			r.Length,
 			r.Data,
 		)
