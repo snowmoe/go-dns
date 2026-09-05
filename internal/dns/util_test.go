@@ -83,3 +83,61 @@ func TestTakeUint16Sequential(t *testing.T) {
 		t.Errorf("second call: got pos %d want 4", c.Pos)
 	}
 }
+
+func TestTakeUint32(t *testing.T) {
+	cases := []struct {
+		name    string
+		bytes   []byte
+		pos     int
+		want    uint32
+		wantPos int
+	}{
+		{"bytes 0-3", []byte{0xAB, 0xCD, 0x12, 0x34, 0xFF, 0xFF}, 0, 0xABCD1234, 4},
+		{"bytes 2-5", []byte{0xFF, 0xFF, 0x12, 0x34, 0x56, 0x78}, 2, 0x12345678, 6},
+		{"bytes 1-4", []byte{0xFF, 0x87, 0x65, 0x43, 0x21, 0xFF}, 1, 0x87654321, 5},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			cur := &Cursor{
+				Pos:  c.pos,
+				Data: c.bytes,
+			}
+
+			got := cur.takeUint32()
+
+			if got != c.want {
+				t.Errorf("got %d want %d", got, c.want)
+			}
+
+			if cur.Pos != c.wantPos {
+				t.Errorf("got pos %d want %d", cur.Pos, c.wantPos)
+			}
+		})
+	}
+}
+
+func TestTakeUint32Sequential(t *testing.T) {
+	c := &Cursor{
+		Pos:  2,
+		Data: []byte{0xFF, 0xFF, 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0x43, 0x21},
+	}
+
+	first := c.takeUint32()
+	if first != 0x12345678 {
+		t.Errorf("first call: got %X want 12345678", first)
+	}
+
+	if c.Pos != 6 {
+		t.Errorf("first call: got pos %d want 6", c.Pos)
+	}
+
+	second := c.takeUint32()
+	if second != 0xABCD4321 {
+		t.Errorf("second call: got %X want ABCD4321", second)
+	}
+
+	if c.Pos != 10 {
+		t.Errorf("second call: got pos %d want 10", c.Pos)
+	}
+}
