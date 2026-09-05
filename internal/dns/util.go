@@ -20,10 +20,6 @@ func (c *Cursor) takeBytes(n int) []byte {
 	return b
 }
 
-func (c *Cursor) skipBytes(n int) {
-	c.Pos += n
-}
-
 func (c *Cursor) takeUint16() uint16 {
 	b := c.takeBytes(2)
 	return binary.BigEndian.Uint16(b)
