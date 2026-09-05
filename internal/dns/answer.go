@@ -18,7 +18,7 @@ func (c *Cursor) DecodeResource() Resource {
 		class  = c.takeUint16()
 		ttl    = c.takeUint32()
 		length = c.takeUint16()
-		data   = c.parseRData(length)
+		data   = c.takeBytes(int(length))
 	)
 
 	return Resource{
@@ -74,9 +74,4 @@ func (c *Cursor) parsePointerLabel() string {
 	c.Pos = current
 
 	return label
-}
-
-func (c *Cursor) parseRData(l uint16) []byte {
-	b := c.takeBytes(int(l))
-	return b
 }
