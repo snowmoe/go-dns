@@ -13,7 +13,7 @@ type Resource struct {
 
 func (c *Cursor) DecodeResource() Resource {
 	var (
-		name   = c.parseName()
+		name   = c.parseLabel()
 		rType  = c.takeUint16()
 		class  = c.takeUint16()
 		ttl    = c.takeUint32()
@@ -31,39 +31,22 @@ func (c *Cursor) DecodeResource() Resource {
 	}
 }
 
-func (c *Cursor) parseName() string {
-	if c.isPointer() {
-		// we know it's a pointer so we skip that byte
-		c.skipBytes(1)
-
-		// consume the next byte and make note of our position
-		var (
-			pointer = c.takeByte()
-			current = c.pos()
-		)
-
-		// go back to the offset from the pointer byte
-		c.Pos = int(pointer)
-
-		// parse as normal
-		label := c.parseLabel()
-
-		// go forward to where we were
-		c.Pos = current
-
-		return strings.Join(label, ".")
-	} else {
-		label := c.parseLabel()
-
-		return strings.Join(label, ".")
-	}
-}
-
-func (c *Cursor) parseLabel() []string {
+func (c *Cursor) parseLabel() string {
 	var parts []string
 	for {
+		// check if the current byte is a pointer
+		if c.isPointer() {
+			// parse the label from the pointer
+			label := c.parsePointerLabel()
+			parts = append(parts, label)
+			// break because pointers can only be at the end of label section
+			break
+		}
+
+		// wasn't a pointer so we know it's the legnth of label bytes
 		labelLen := c.takeByte()
 
+		// check if the length = 0 = terminator
 		if labelLen == 0 {
 			break
 		}
@@ -73,7 +56,24 @@ func (c *Cursor) parseLabel() []string {
 		parts = append(parts, label)
 	}
 
-	return parts
+	return strings.Join(parts, ".")
+}
+
+func (c *Cursor) parsePointerLabel() string {
+	// pointer offset spreads over 14 bits
+	pointer := bits(c.takeUint16(), 0, 14)
+	current := c.pos()
+
+	// go back to the offset from the pointer byte
+	c.Pos = int(pointer)
+
+	// parse as normal
+	label := c.parseLabel()
+
+	// go forward to where we were
+	c.Pos = current
+
+	return label
 }
 
 func (c *Cursor) parseRData(l uint16) []byte {
