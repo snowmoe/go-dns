@@ -1,6 +1,8 @@
 package dns
 
-import "strings"
+import (
+	"strings"
+)
 
 type Resource struct {
 	Name   string
@@ -18,7 +20,7 @@ func (c *Cursor) DecodeResource() Resource {
 		class  = c.takeUint16()
 		ttl    = c.takeUint32()
 		length = c.takeUint16()
-		data   = c.takeBytes(int(length))
+		data   = c.parseRData(rType, length)
 	)
 
 	return Resource{
@@ -28,6 +30,19 @@ func (c *Cursor) DecodeResource() Resource {
 		TTL:    ttl,
 		Length: length,
 		Data:   data,
+	}
+}
+
+func (c *Cursor) parseRData(t uint16, ul uint16) []byte {
+	l := int(ul)
+
+	switch t {
+	case 1:
+		return c.takeBytes(l)
+	case 2:
+		return []byte(c.parseLabel())
+	default:
+		return make([]byte, l)
 	}
 }
 
