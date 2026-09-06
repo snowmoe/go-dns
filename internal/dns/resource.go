@@ -1,6 +1,7 @@
 package dns
 
 import (
+	"net"
 	"strings"
 )
 
@@ -10,7 +11,7 @@ type Resource struct {
 	Class  uint16
 	TTL    uint32
 	Length uint16
-	Data   []byte
+	Data   any
 }
 
 func (c *Cursor) DecodeResource() Resource {
@@ -33,14 +34,14 @@ func (c *Cursor) DecodeResource() Resource {
 	}
 }
 
-func (c *Cursor) parseRData(t uint16, ul uint16) []byte {
+func (c *Cursor) parseRData(t uint16, ul uint16) any {
 	l := int(ul)
 
 	switch t {
 	case 1:
-		return c.takeBytes(l)
+		return net.IP(c.takeBytes(l))
 	case 2:
-		return []byte(c.parseLabel())
+		return c.parseLabel()
 	default:
 		return make([]byte, l)
 	}
