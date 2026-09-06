@@ -7,8 +7,8 @@ import (
 
 type Resource struct {
 	Name   string
-	Type   uint16
-	Class  uint16
+	Type   Type
+	Class  Class
 	TTL    uint32
 	Length uint16
 	Data   any
@@ -26,8 +26,8 @@ func (c *Cursor) DecodeResource() Resource {
 
 	return Resource{
 		Name:   name,
-		Type:   rType,
-		Class:  class,
+		Type:   Type(rType),
+		Class:  Class(class),
 		TTL:    ttl,
 		Length: length,
 		Data:   data,
@@ -90,4 +90,40 @@ func (c *Cursor) parsePointerLabel() string {
 	c.Pos = current
 
 	return label
+}
+
+func (c Class) String() string {
+	switch c {
+	case 1:
+		return "IN"
+	case 2:
+		return "CS"
+	case 3:
+		return "CH"
+	case 4:
+		return "HS"
+	case 255:
+		return "*"
+	default:
+		return ""
+	}
+}
+
+func (t Type) String() string {
+	switch t {
+	case 1:
+		return "A"
+	case 2:
+		return "NS"
+	case 5:
+		return "CNAME"
+	case 12:
+		return "PTR"
+	case 15:
+		return "MX"
+	case 16:
+		return "TXT"
+	default:
+		return ""
+	}
 }
