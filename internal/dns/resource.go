@@ -42,9 +42,36 @@ func (c *Cursor) parseRData(t uint16, ul uint16) any {
 		return net.IP(c.takeBytes(l))
 	case 2:
 		return c.parseLabel()
+	case 5:
+		return c.parseLabel()
+	case 16:
+		return c.parseTxtData(l)
 	default:
 		return make([]byte, l)
 	}
+}
+
+func (c *Cursor) parseTxtData(l int) TXT {
+	var (
+		parts    []string
+		consumed int
+	)
+
+	for {
+		if consumed >= l {
+			break
+		}
+
+		labelLen := c.takeByte()
+		consumed++
+
+		label := string(c.takeBytes(int(labelLen)))
+		consumed += int(labelLen)
+
+		parts = append(parts, label)
+	}
+
+	return parts
 }
 
 func (c *Cursor) parseLabel() string {
@@ -126,4 +153,12 @@ func (t Type) String() string {
 	default:
 		return ""
 	}
+}
+
+func (t TXT) String() string {
+	var parts []string
+	for _, r := range t {
+		parts = append(parts, "\""+r+"\"")
+	}
+	return strings.Join(parts, ",")
 }
